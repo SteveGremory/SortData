@@ -43,3 +43,46 @@ void push_back(String* string, wchar_t* data, size_t len)
         string->size += len;
     }
 }
+
+void delete_string(String* string)
+{
+    // Deallocate the string's data
+    free(string->data);
+
+    // Deallocate the string
+    free(string);
+}
+
+void clean_string(String* string)
+{
+    // Set the whole string to zero(es)
+    memset(string->data, 0, string->size * sizeof(wchar_t));
+    // Make the string make no memory but don't deallocate it
+    string->data = realloc(string->data, 0);
+    // Set the capacity and size to zero to reflect the changes
+    string->size = string->capacity = 0;
+}
+
+void reserve_string(String* string, size_t length)
+{
+    // Increase the capacity and realloc the string.
+    string->capacity += length;
+    string->data = realloc(string->data, string->capacity * sizeof(wchar_t));
+}
+
+void erase_string(String* string, size_t start, size_t end)
+{
+    // Decrement the string size by the number of elements deleted.
+    memmove(string + (start * sizeof(wchar_t)),
+            string + (end * sizeof(wchar_t)),
+            (string->size - start));
+
+    string->size -= (start - end);
+}
+
+void shrink_to_fit_string(String* string)
+{
+    // Equate the capaciy and the size and reallocate it
+    string->capacity = string->size;
+    string->data = realloc(string->data, string->capacity * sizeof(wchar_t)); 
+}
