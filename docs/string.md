@@ -1,12 +1,14 @@
 # String manipulation
+
 ## General API
+
     - Creation: Creates a string, returns the structure.
     ```c
-    String* create_string(wchar_t* data, size_t len);
+    String* create_string(char* data, size_t len);
     ```
     - Append: Appends to a string, takes in the string structure you want to append to, the data you wanna append to and the length of the data you want to append.
     ```c
-    void push_back(String* string, wchar_t* data, size_t len);
+    void push_back(String* string, char* data, size_t len);
     ```
     - Delete: Deallocate the string, as it's allocated on the heap.
     ```c
@@ -28,5 +30,3 @@
     ```c
     void shrink_to_fit_string(String* string);
     ```
-
-

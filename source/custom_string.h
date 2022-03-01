@@ -1,25 +1,34 @@
 #pragma once
+
+#include <stdio.h>
 #include <stdlib.h>
+
+#include <stdint.h>
+#include <string.h>
+#include <uchar.h>
 
 typedef struct {
     size_t capacity;
     size_t size;
-    wchar_t* data;
+    char* data;
 } String;
+
+void expand(String* string, size_t len);
 
 /*
  * @brief: Create a string and return it.
  * @param data: the data to be stored.
  * @param len: length of the string being stored.
  * */
-String* create_string(wchar_t* data, size_t len);
+String* create_string(char* data, size_t len);
+
 /*
  * @brief: Append a string to another one.
  * @param string: the string you want to append to.
  * @param data: data you want to append.
  * @param len: the length of the data you want to append.
  * */
-void push_back(String* string, wchar_t* data, size_t len);
+void push_back(String* string, char* data, size_t len);
 
 /*
  * @brief: Deallocates the array. Don't forget to call this after using the object.
@@ -53,4 +62,3 @@ void erase_string(String* string, size_t start, size_t end);
  * @param string: the string you want to manipulate.
  * */
 void shrink_to_fit_string(String* string);
-

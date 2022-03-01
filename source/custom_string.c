@@ -1,47 +1,53 @@
 #include "custom_string.h"
 
-#include <string.h>
-#include <stdio.h>
-#include <wchar.h>
-
-void append(wchar_t* dest, int destsize, wchar_t* source, int sourcesize)
+/*
+ * @brief: Append to a string
+ * @param dest: the string you want to append to
+ * @param destsize: length of the dest string
+ * @param source: the string that is to be appended
+ * @param sourcesize: the size of the string you want to append
+ * */
+void append(char* dest, size_t destsize, char* source, size_t sourcesize)
 {
-    memcpy(dest + (destsize), source, ( sourcesize * sizeof(wchar_t) ) );
+    memcpy((dest + destsize), source, (sourcesize * sizeof(char)));
 }
 
-String* create_string(wchar_t* data, size_t len)
+String* create_string(char* data, size_t len)
 {
     // Allocte the string on the heap
-    wchar_t* temp = malloc(len * sizeof(wchar_t));
-    memcpy(temp, data, len * sizeof(wchar_t));
-    // Create a stack allocated 
+    char* temp = malloc(len * sizeof(char));
+    memcpy(temp, data, len * sizeof(char));
+    // Create a stack allocated
     String* str = malloc(sizeof(String));
-    
+
     str->data = temp;
     str->capacity = len;
     str->size = len;
-    
+
     return str;
 }
 
-void push_back(String* string, wchar_t* data, size_t len)
+void expand(String* string, size_t len)
 {
     if ((string->size + len) > string->capacity) {
         // Double the capacity of the string
-        string->capacity *= 2;
+        string->capacity += len;
+        while (string->capacity < (string->size + len))
+            string->capacity *= 3;
         // Reallocate the string
         string->data = realloc(string->data,
-                string->capacity * sizeof(wchar_t)); 
-        // Append the data to the string
-        append(string->data, string->size, data, len); 
-        // Update the length of the string
-        string->size += len;
-    } else {
-        // Append the data to the string
-        append(string->data, string->size, data, len); 
-        // Update the length of the string
-        string->size += len;
+            string->capacity * sizeof(char));
     }
+}
+
+void push_back(String* string, char* data, size_t len)
+{
+
+    expand(string, len);
+    // Append the data to the string
+    append(string->data, string->size, data, len);
+    // Update the length of the string
+    string->size += len;
 }
 
 void delete_string(String* string)
@@ -56,7 +62,7 @@ void delete_string(String* string)
 void clean_string(String* string)
 {
     // Set the whole string to zero(es)
-    memset(string->data, 0, string->size * sizeof(wchar_t));
+    memset(string->data, 0, string->size * sizeof(char));
     // Make the string make no memory but don't deallocate it
     string->data = realloc(string->data, 0);
     // Set the capacity and size to zero to reflect the changes
@@ -67,22 +73,24 @@ void reserve_string(String* string, size_t length)
 {
     // Increase the capacity and realloc the string.
     string->capacity += length;
-    string->data = realloc(string->data, string->capacity * sizeof(wchar_t));
+    string->data = realloc(string->data, string->capacity * sizeof(char));
 }
 
 void erase_string(String* string, size_t start, size_t end)
 {
-    // Decrement the string size by the number of elements deleted.
-    memmove(string + (start * sizeof(wchar_t)),
-            string + (end * sizeof(wchar_t)),
-            (string->size - start));
+    size_t len = (string->size - end);
+    memmove(string->data + (start - 1), string->data + end, len * sizeof(char));
+    // FIX ME
 
-    string->size -= (start - end);
+    printf("FIX ME! LINE 80 CUSTOM_STRING.C\n");
+    exit(1);
+
+    // memset(string->data + string->size, 0, 0);
 }
 
 void shrink_to_fit_string(String* string)
 {
     // Equate the capaciy and the size and reallocate it
     string->capacity = string->size;
-    string->data = realloc(string->data, string->capacity * sizeof(wchar_t)); 
+    string->data = realloc(string->data, string->capacity * sizeof(char));
 }
