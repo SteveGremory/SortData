@@ -1,4 +1,7 @@
+#define _GNU_SOURCE
+#include <sys/mman.h>
 #include "custom_string.h"
+#include <errno.h>
 
 /*
  * @brief: Append to a string
@@ -29,20 +32,23 @@ String* create_string(char* data, size_t len)
 
 void expand(String* string, size_t len)
 {
-    if ((string->size + len) > string->capacity) {
-        // Double the capacity of the string
-        string->capacity += len;
-        while (string->capacity < (string->size + len))
-            string->capacity *= 3;
+    if ((string->size + len) > string->capacity) { 
+        // Triple the string's capacity
+        string->capacity *= 3;
+        
+        // Let's say a huge string was appended to a small one
+        // make sure that the capacity is indeed enough to hold it.
+        if (string->capacity < (string->size + len))
+            string->capacity += len;
+
         // Reallocate the string
         string->data = realloc(string->data,
             string->capacity * sizeof(char));
-    }
+    }        
 }
 
 void push_back(String* string, char* data, size_t len)
 {
-
     expand(string, len);
     // Append the data to the string
     append(string->data, string->size, data, len);
@@ -54,7 +60,6 @@ void delete_string(String* string)
 {
     // Deallocate the string's data
     free(string->data);
-
     // Deallocate the string
     free(string);
 }
